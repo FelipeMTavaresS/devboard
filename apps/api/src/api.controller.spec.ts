@@ -17,7 +17,7 @@ describe('ApiController', () => {
   describe('root', () => {
     it('should return "Hello World!"', () => {
       const result = apiController.getHello();
-      expect(apiController.getHello()).toBe('Hello World!');
+      expect(result).toBe('Hello World!');
     });
   });
 });
