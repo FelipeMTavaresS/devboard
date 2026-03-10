@@ -33,7 +33,7 @@ describe('TasksController', () => {
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(taskController).toBeDefined();
   });
 
   describe('findAll', () => {
