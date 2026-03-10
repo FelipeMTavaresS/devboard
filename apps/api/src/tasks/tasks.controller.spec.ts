@@ -8,7 +8,9 @@ describe('TasksController', () => {
   let service: TasksService;
 
   const mockTasksService = {
-    findAll: jest.fn().mockReturnValue([{ id: '1', title: 'Task 1', completed: false }]),
+    findAll: jest
+      .fn()
+      .mockReturnValue([{ id: '1', title: 'Task 1', completed: false }]),
     create: jest.fn().mockImplementation((title: string) => ({
       id: '1',
       title,
@@ -39,7 +41,7 @@ describe('TasksController', () => {
   describe('findAll', () => {
     it('should return an array of tasks', () => {
       const result = controller.findAll();
-      
+
       expect(result).toEqual([{ id: '1', title: 'Task 1', completed: false }]);
       expect(service.findAll).toHaveBeenCalled();
     });
