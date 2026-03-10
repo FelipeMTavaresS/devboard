@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { ApiModule } from './../src/api.module';
-import { Server } from 'http';
 
 describe('ApiController (e2e)', () => {
   let app: INestApplication;
@@ -17,7 +16,6 @@ describe('ApiController (e2e)', () => {
   });
 
   it('/ (GET)', () => {
-    const server = app.getHttpServer() as Server:
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
