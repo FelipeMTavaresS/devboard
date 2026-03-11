@@ -25,37 +25,41 @@ describe('TasksService', () => {
     });
 
     it('should throw an error if task does not exist', () => {
-      expect(() => service.complete('invalid-id')).toThrow('Task not found');
+      expect(() => service.complete('invalid-id')).toThrow(
+        'Task with ID "invalid-id" not found',
+      );
     });
   });
 
-  describe('delete', () => {
+  describe('remove', () => {
     it('should remove a task', () => {
       const task = service.create('Task to be deleted');
-      service.delete(task.id);
+      service.remove(task.id);
       const tasks = service.findAll();
 
       expect(tasks).not.toContain(task);
     });
 
     it('should throw an error if task to delete does not exist', () => {
-      expect(() => service.delete('invalid-id')).toThrow('Task not found');
+      expect(() => service.remove('invalid-id')).toThrow(
+        'Task with ID "invalid-id" not found',
+      );
     });
   });
 
   describe('update', () => {
     it('should update a task title', () => {
       const task = service.create('Original Title');
-      const updatedTask = service.update(task.id, 'Updated Title');
+      const updatedTask = service.update(task.id, { title: 'Updated Title' });
 
       expect(updatedTask.title).toBe('Updated Title');
       expect(service.findAll()[0].title).toBe('Updated Title');
     });
 
     it('should throw an error if task to update does not exist', () => {
-      expect(() => service.update('invalid-id', 'New Title')).toThrow(
-        'Task not found',
-      );
+      expect(() =>
+        service.update('invalid-id', { title: 'New Title' }),
+      ).toThrow('Task with ID "invalid-id" not found');
     });
   });
 
