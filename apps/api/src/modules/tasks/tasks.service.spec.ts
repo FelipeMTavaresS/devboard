@@ -17,6 +17,29 @@ describe('TasksService', () => {
     expect(service).toBeDefined();
   });
 
+  describe('findAll', () => {
+    it('should return all tasks', () => {
+      service.create('Task 1');
+      service.create('Task 2');
+      const tasks = service.findAll();
+      expect(tasks).toHaveLength(2);
+    });
+  });
+
+  describe('findOne', () => {
+    it('should return a task by id', () => {
+      const createdTask = service.create('Test Task');
+      const foundTask = service.findOne(createdTask.id);
+      expect(foundTask).toEqual(createdTask);
+    });
+
+    it('should throw NotFoundException if task does not exist', () => {
+      expect(() => service.findOne('invalid-id')).toThrow(
+        'Task with ID "invalid-id" not found',
+      );
+    });
+  });
+
   describe('complete', () => {
     it('should mark a task as completed', () => {
       const task: Task = service.create('New Task');
