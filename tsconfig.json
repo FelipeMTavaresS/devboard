@@ -22,5 +22,6 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {}
-  }
-}
+    },
+    "include": ["src", "apps", "libs", "test"]
+    }

@@ -47,7 +47,6 @@ describe('TasksController', () => {
       const result = controller.findAll();
 
       expect(result).toEqual([{ id: '1', title: 'Task 1', completed: false }]);
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.findAll).toHaveBeenCalled();
     });
   });
@@ -60,7 +59,6 @@ describe('TasksController', () => {
       const result = controller.findOne('1');
 
       expect(result).toEqual(task);
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.findOne).toHaveBeenCalledWith('1');
     });
   });
@@ -77,7 +75,6 @@ describe('TasksController', () => {
       const result = controller.update('1', updateTaskDto);
 
       expect(result).toEqual(task);
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.update).toHaveBeenCalledWith('1', updateTaskDto);
     });
   });
@@ -85,7 +82,6 @@ describe('TasksController', () => {
   describe('remove', () => {
     it('should remove a task', () => {
       controller.remove('1');
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.remove).toHaveBeenCalledWith('1');
     });
   });
@@ -96,7 +92,6 @@ describe('TasksController', () => {
       const result = controller.create(createTaskDto);
 
       expect(result.title).toBe(createTaskDto.title);
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.create).toHaveBeenCalledWith(createTaskDto.title);
     });
   });

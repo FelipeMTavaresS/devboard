@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TasksService } from './tasks.service';
+import { Task } from './task.entity';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -18,7 +19,7 @@ describe('TasksService', () => {
 
   describe('complete', () => {
     it('should mark a task as completed', () => {
-      const task = service.create('New Task');
+      const task: Task = service.create('New Task');
       const completedTask = service.complete(task.id);
 
       expect(completedTask.completed).toBe(true);
@@ -33,7 +34,7 @@ describe('TasksService', () => {
 
   describe('remove', () => {
     it('should remove a task', () => {
-      const task = service.create('Task to be deleted');
+      const task: Task = service.create('Task to be deleted');
       service.remove(task.id);
       const tasks = service.findAll();
 
@@ -49,7 +50,7 @@ describe('TasksService', () => {
 
   describe('update', () => {
     it('should update a task title', () => {
-      const task = service.create('Original Title');
+      const task: Task = service.create('Original Title');
       const updatedTask = service.update(task.id, { title: 'Updated Title' });
 
       expect(updatedTask.title).toBe('Updated Title');
