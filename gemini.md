@@ -237,16 +237,24 @@ test: add tests for tasks service
 Linting and Formatting
 
 Tools used:
+- ESLint
+- Prettier
 
-ESLint
+Rigor Rules:
+- **No `eslint-disable`**: Never use inline comments to disable lint rules (e.g., `/* eslint-disable */`).
+- **Global Configuration**: Exceptions (like `unbound-method` in tests) must be handled in `eslint.config.mjs` using overrides for specific file patterns (`.spec.ts`, `.e2e-spec.ts`).
+- **Type Safety**: All variables and function returns in tests must be properly typed. Avoid `any` whenever possible.
+- **CI Readiness**: Before committing, the following must pass locally:
+  - `pnpm run lint`
+  - `pnpm run test`
+  - `pnpm run build`
 
-Prettier
+TypeScript Standards:
+- **Project Context**: All files (including tests and apps) must be included in `tsconfig.json` to ensure the compiler and linter have full context for type inference.
+- **Strict Mode**: Maintain strict type checking to catch errors early.
 
-Before committing code the following must pass:
-
-pnpm run lint
-pnpm run test
 CI/CD
+...
 
 Continuous Integration will be handled by GitHub Actions.
 
