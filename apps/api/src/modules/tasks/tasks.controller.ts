@@ -20,6 +20,11 @@ export class TasksController {
     return this.tasksService.findAll();
   }
 
+  @Get('stats')
+  getStats() {
+    return this.tasksService.getStats();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tasksService.findOne(id);

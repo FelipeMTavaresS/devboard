@@ -64,4 +64,16 @@ export class TasksService {
   findPending(): Task[] {
     return this.tasks.filter((task) => !task.completed);
   }
+
+  getStats() {
+    const total = this.tasks.length;
+    const completed = this.tasks.filter((task) => task.completed).length;
+    const pending = total - completed;
+
+    return {
+      total,
+      completed,
+      pending,
+    };
+  }
 }

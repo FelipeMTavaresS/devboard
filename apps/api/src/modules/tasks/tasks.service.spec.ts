@@ -114,4 +114,21 @@ describe('TasksService', () => {
       expect(pendingTasks[0].completed).toBe(false);
     });
   });
+
+  describe('getStats', () => {
+    it('should return correct task statistics', () => {
+      service.create('Task 1');
+      const task2 = service.create('Task 2');
+      service.create('Task 3');
+      service.complete(task2.id);
+
+      const stats = service.getStats();
+
+      expect(stats).toEqual({
+        total: 3,
+        completed: 1,
+        pending: 2,
+      });
+    });
+  });
 });

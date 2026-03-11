@@ -21,6 +21,7 @@ describe('TasksController', () => {
       createdAt: new Date(),
     })),
     remove: jest.fn(),
+    getStats: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -48,6 +49,18 @@ describe('TasksController', () => {
 
       expect(result).toEqual([{ id: '1', title: 'Task 1', completed: false }]);
       expect(service.findAll).toHaveBeenCalled();
+    });
+  });
+
+  describe('getStats', () => {
+    it('should return task statistics', () => {
+      const stats = { total: 10, completed: 4, pending: 6 };
+      jest.spyOn(service, 'getStats').mockReturnValue(stats);
+
+      const result = controller.getStats();
+
+      expect(result).toEqual(stats);
+      expect(service.getStats).toHaveBeenCalled();
     });
   });
 

@@ -222,18 +222,22 @@ Keep dependencies minimal
 
 Git Workflow
 
-Branch naming:
+Git Workflow
 
-feature/task-module
-fix/api-error
-refactor/service-layer
+Branch naming:
+- feature/task-module
+- fix/api-error
+- refactor/service-layer
 
 Commit style:
+- feat: add tasks module
+- fix: correct validation bug
+- refactor: improve service structure
+- test: add tests for tasks service
 
-feat: add tasks module
-fix: correct validation bug
-refactor: improve service structure
-test: add tests for tasks service
+**Atomic Commits Rule**:
+- **Commit per Feature**: Every new feature or significant change must be committed individually once it is implemented and verified (tests passing). Avoid batching multiple unrelated features in a single commit.
+
 Linting and Formatting
 
 Tools used:
