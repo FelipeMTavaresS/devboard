@@ -67,7 +67,10 @@ describe('TasksController', () => {
 
   describe('update', () => {
     it('should update a task', () => {
-      const updateTaskDto: UpdateTaskDto = { title: 'Updated Title', completed: true };
+      const updateTaskDto: UpdateTaskDto = {
+        title: 'Updated Title',
+        completed: true,
+      };
       const task = { id: '1', title: 'Updated Title', completed: true };
       jest.spyOn(service, 'update').mockReturnValue(task);
 

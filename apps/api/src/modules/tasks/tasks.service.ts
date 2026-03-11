@@ -45,15 +45,15 @@ export class TasksService {
 
   update(id: string, updateTaskDto: UpdateTaskDto): Task {
     const task = this.findOne(id);
-    
+
     if (updateTaskDto.title !== undefined) {
       task.title = updateTaskDto.title;
     }
-    
+
     if (updateTaskDto.completed !== undefined) {
       task.completed = updateTaskDto.completed;
     }
-    
+
     return task;
   }
 
