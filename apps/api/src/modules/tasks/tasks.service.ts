@@ -55,4 +55,4 @@ export class TasksService {
   findPending(): Task[] {
     return this.tasks.filter((task) => !task.completed);
   }
-  }
+}

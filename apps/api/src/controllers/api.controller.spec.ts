@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiController } from './api.controller';
-import { ApiService } from './api.service';
+import { ApiService } from '../services/api.service';
 
 describe('ApiController', () => {
   let apiController: ApiController;
@@ -16,8 +16,7 @@ describe('ApiController', () => {
 
   describe('root', () => {
     it('should return "Hello World!"', () => {
-      const result = apiController.getHello();
-      expect(result).toBe('Hello World!');
+      expect(apiController.getHello()).toBe('Hello World!');
     });
   });
 });

@@ -34,7 +34,7 @@ describe('TasksService', () => {
       const task = service.create('Task to be deleted');
       service.delete(task.id);
       const tasks = service.findAll();
-      
+
       expect(tasks).not.toContain(task);
     });
 
@@ -47,13 +47,15 @@ describe('TasksService', () => {
     it('should update a task title', () => {
       const task = service.create('Original Title');
       const updatedTask = service.update(task.id, 'Updated Title');
-      
+
       expect(updatedTask.title).toBe('Updated Title');
       expect(service.findAll()[0].title).toBe('Updated Title');
     });
 
     it('should throw an error if task to update does not exist', () => {
-      expect(() => service.update('invalid-id', 'New Title')).toThrow('Task not found');
+      expect(() => service.update('invalid-id', 'New Title')).toThrow(
+        'Task not found',
+      );
     });
   });
 

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ApiController } from './api.controller';
-import { ApiService } from './api.service';
-import { TasksModule } from './tasks/tasks.module';
+import { ApiController } from './controllers/api.controller';
+import { ApiService } from './services/api.service';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [TasksModule],

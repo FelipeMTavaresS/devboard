@@ -8,7 +8,9 @@ describe('TasksController', () => {
   let service: TasksService;
 
   const mockTasksService = {
-    findAll: jest.fn().mockReturnValue([{ id: '1', title: 'Task 1', completed: false }]),
+    findAll: jest
+      .fn()
+      .mockReturnValue([{ id: '1', title: 'Task 1', completed: false }]),
     create: jest.fn().mockImplementation((title: string) => ({
       id: '1',
       title,
@@ -33,14 +35,15 @@ describe('TasksController', () => {
   });
 
   it('should be defined', () => {
-    expect(taskController).toBeDefined();
+    expect(controller).toBeDefined();
   });
 
   describe('findAll', () => {
     it('should return an array of tasks', () => {
       const result = controller.findAll();
-      
+
       expect(result).toEqual([{ id: '1', title: 'Task 1', completed: false }]);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.findAll).toHaveBeenCalled();
     });
   });
@@ -51,6 +54,7 @@ describe('TasksController', () => {
       const result = controller.create(createTaskDto);
 
       expect(result.title).toBe(createTaskDto.title);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.create).toHaveBeenCalledWith(createTaskDto.title);
     });
   });
