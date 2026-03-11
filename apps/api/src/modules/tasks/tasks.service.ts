@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Task } from './task.entity';
 import { randomUUID } from 'crypto';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -22,29 +23,37 @@ export class TasksService {
     return this.tasks;
   }
 
-  private findTaskById(id: string): Task {
+  findOne(id: string): Task {
     const task = this.tasks.find((t) => t.id === id);
     if (!task) {
-      throw new Error('Task not found');
+      throw new NotFoundException(`Task with ID "${id}" not found`);
     }
     return task;
   }
 
   complete(id: string): Task {
-    const task = this.findTaskById(id);
+    const task = this.findOne(id);
     task.completed = true;
     return task;
   }
 
-  delete(id: string): void {
-    const task = this.findTaskById(id);
+  remove(id: string): void {
+    const task = this.findOne(id);
     const taskIndex = this.tasks.indexOf(task);
     this.tasks.splice(taskIndex, 1);
   }
 
-  update(id: string, title: string): Task {
-    const task = this.findTaskById(id);
-    task.title = title;
+  update(id: string, updateTaskDto: UpdateTaskDto): Task {
+    const task = this.findOne(id);
+    
+    if (updateTaskDto.title !== undefined) {
+      task.title = updateTaskDto.title;
+    }
+    
+    if (updateTaskDto.completed !== undefined) {
+      task.completed = updateTaskDto.completed;
+    }
+    
     return task;
   }
 
