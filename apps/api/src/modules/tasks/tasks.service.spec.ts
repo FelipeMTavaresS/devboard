@@ -27,7 +27,9 @@ describe('TasksService', () => {
               create: jest.fn().mockResolvedValue(mockTask),
               findMany: jest.fn().mockResolvedValue([mockTask]),
               findUnique: jest.fn().mockResolvedValue(mockTask),
-              update: jest.fn().mockResolvedValue({ ...mockTask, completed: true }),
+              update: jest
+                .fn()
+                .mockResolvedValue({ ...mockTask, completed: true }),
               delete: jest.fn().mockResolvedValue(mockTask),
               count: jest.fn().mockResolvedValue(1),
             },
@@ -46,7 +48,7 @@ describe('TasksService', () => {
       jest.spyOn(prisma.task, 'create').mockResolvedValue(highTask);
 
       const result = await service.create('High Task', Priority.HIGH);
-      
+
       expect(result.priority).toBe(Priority.HIGH);
       expect(prisma.task.create).toHaveBeenCalled();
     });
@@ -104,7 +106,8 @@ describe('TasksService', () => {
 
   describe('getStats', () => {
     it('should return stats including priority counts', async () => {
-      jest.spyOn(prisma.task, 'count')
+      jest
+        .spyOn(prisma.task, 'count')
         .mockResolvedValueOnce(3) // total
         .mockResolvedValueOnce(1) // completed
         .mockResolvedValueOnce(1) // low

@@ -111,6 +111,7 @@ Commit style:
 
 **Atomic Commits Rule**:
 - **Commit per Feature**: Every new feature or significant change must be committed individually once it is implemented and verified (tests passing). Avoid batching multiple unrelated features in a single commit.
+- **Push Permission**: After each successful atomic commit, the AI agent must ask the user for explicit permission to perform a `git push` to the remote repository.
 
 CI Readiness:
 Before committing, ensure the following pass:

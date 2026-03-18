@@ -84,9 +84,15 @@ export class TasksService {
     const pending = total - completed;
 
     // Optional: stats by priority
-    const low = await this.prisma.task.count({ where: { priority: Priority.LOW } });
-    const medium = await this.prisma.task.count({ where: { priority: Priority.MEDIUM } });
-    const high = await this.prisma.task.count({ where: { priority: Priority.HIGH } });
+    const low = await this.prisma.task.count({
+      where: { priority: Priority.LOW },
+    });
+    const medium = await this.prisma.task.count({
+      where: { priority: Priority.MEDIUM },
+    });
+    const high = await this.prisma.task.count({
+      where: { priority: Priority.HIGH },
+    });
 
     return {
       total,
