@@ -27,6 +27,7 @@
     "src",
     "apps",
     "libs",
-    "test"
+    "test",
+    "prisma.config.ts"
   ]
 }
