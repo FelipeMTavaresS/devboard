@@ -6,65 +6,35 @@ Architecture: Monorepo
 Framework: NestJS
 Language: TypeScript
 Development Strategy: Test Driven Development (TDD)
+Persistence: Prisma ORM (PostgreSQL / Supabase)
 
 DevBoard is a backend system designed to provide a scalable service architecture for managing tasks and services. The system is structured using a modular monorepo approach, allowing independent applications and shared libraries.
 
-The main API is located in apps/api and exposes a REST interface.
-
 Repository Structure
 apps/
-  api/
+  api/ (Main REST API)
     src/
+      app.module.ts (Root Module)
+      app.controller.ts (Global Handlers)
+      app.service.ts
+      database/ (Prisma Integration)
       modules/
-      controllers/
-      services/
+        tasks/ (Task Management Feature)
 
-  tasks/
+  tasks/ (Background Worker)
+    src/
+      app.module.ts
+      app.controller.ts
+      app.service.ts
 
-libs/
+libs/ (Shared logic between apps)
 
-test/
-apps/api
-
-Main NestJS REST API.
-
-Responsibilities:
-
-HTTP request handling
-
-business logic orchestration
-
-validation
-
-integration with persistence layers
-
-apps/tasks
-
-Responsible for background jobs and scheduled processes.
-
-Examples:
-
-async processing
-
-cron jobs
-
-queue consumers
-
-libs
-
-Reusable libraries shared across apps.
-
-Examples:
-
-shared types
-
-utilities
-
-domain logic
+prisma/
+  schema.prisma (Database Schema)
 
 Architecture Rules
 
-The project follows Clean Architecture principles.
+The project follows Clean Architecture and Modular principles.
 
 Layer responsibilities:
 
@@ -72,234 +42,79 @@ Controller
    ↓
 Service (Use Cases)
    ↓
-Repository (Data Access)
+Prisma (Data Access)
    ↓
-Database
-Controllers
+Supabase (PostgreSQL)
 
-Controllers must only:
+Organizational Rules:
+- No global `controllers/` or `services/` folders.
+- All domain logic must reside within specific modules (e.g., `modules/tasks`).
+- Each application in the monorepo has its own `AppModule`, `AppController`, and `AppService` at the `src` root.
 
-receive HTTP requests
+Data Persistence (Prisma & Supabase)
 
-validate inputs
+The project uses Prisma ORM for type-safe database access.
 
-call services
+Model: Task
+- id: String (UUID)
+- title: String
+- completed: Boolean (Default: false)
+- priority: Enum (LOW, MEDIUM, HIGH)
+- createdAt: DateTime
 
-return responses
-
-Controllers must not contain business logic.
-
-Services
-
-Services contain:
-
-business rules
-
-orchestration logic
-
-domain logic
-
-Services should be easily testable.
-
-Repositories (Future Layer)
-
-Repositories will handle:
-
-database queries
-
-persistence
-
-entity mapping
-
-Services should never interact directly with the database.
+Workflow for Database Changes:
+1. Update `prisma/schema.prisma`.
+2. Run `npx prisma generate` to update types locally.
+3. Run `npx prisma migrate dev --name [description]` to apply changes to Supabase.
 
 Test Driven Development (TDD)
 
-All new features must follow TDD.
+All new features must follow TDD with Prisma mocks.
 
-Workflow:
+Testing framework: Jest
 
-Write failing tests
+Test location example: `tasks.service.spec.ts`
 
-Implement minimal code
-
-Pass tests
-
-Refactor
-
-Testing framework:
-
-Jest
-
-Test location example:
-
-tasks.service.spec.ts
-
-Tests should cover:
-
-service logic
-
-edge cases
-
-error handling
+Mocking strategy:
+- Use a mock `PrismaService` to prevent tests from requiring a real database connection.
+- Ensure all service methods are asynchronous (`Promise`).
 
 API Design Guidelines
 
-The API must follow REST conventions.
+The API follows REST conventions.
 
 Example endpoints:
-
-GET    /tasks
+GET    /tasks (Supports ?priority=HIGH filter)
 POST   /tasks
-GET    /tasks/:id
-PATCH  /tasks/:id
+GET    /tasks/stats (Includes priority statistics)
+PATCH  /tasks/:id/complete
 DELETE /tasks/:id
-
-Responses must use JSON.
-
-Example response:
-
-{
-  "id": "uuid",
-  "title": "Task name",
-  "completed": false,
-  "createdAt": "timestamp"
-}
-
-Errors should follow a consistent structure.
-
-DTO Pattern
-
-All inputs must use DTOs.
-
-Example:
-
-CreateTaskDto
-UpdateTaskDto
-
-Validation libraries:
-
-class-validator
-
-class-transformer
 
 Coding Standards
 
-General rules:
-
-Use TypeScript strict mode
-
-Prefer immutability
-
-Avoid large classes
-
-Keep functions small
-
-Follow NestJS conventions
-
-Naming conventions:
-
-task.controller.ts
-task.service.ts
-task.module.ts
-AI Agent Coding Rules
-
-When an AI agent modifies this repository it must:
-
-Respect the existing folder structure
-
-Never add business logic inside controllers
-
-Prefer creating new modules instead of bloated files
-
-Always generate tests when creating services
-
-Follow TDD when implementing features
-
-Avoid introducing new frameworks without justification
-
-Keep dependencies minimal
-
-Git Workflow
+Rigor Rules:
+- No `eslint-disable`.
+- Type Safety: All variables and function returns must be properly typed.
+- Async/Await: All database operations must be handled asynchronously.
 
 Git Workflow
 
 Branch naming:
-- feature/task-module
-- fix/api-error
-- refactor/service-layer
+- feature/task-priority
+- fix/prisma-connection
+- refactor/folder-structure
 
 Commit style:
-- feat: add tasks module
-- fix: correct validation bug
-- refactor: improve service structure
-- test: add tests for tasks service
+- feat: add task priority with prisma
+- refactor: organize folders to nest standards
+- test: mock prisma service in tasks tests
 
 **Atomic Commits Rule**:
 - **Commit per Feature**: Every new feature or significant change must be committed individually once it is implemented and verified (tests passing). Avoid batching multiple unrelated features in a single commit.
 
-Linting and Formatting
-
-Tools used:
-- ESLint
-- Prettier
-
-Rigor Rules:
-- **No `eslint-disable`**: Never use inline comments to disable lint rules (e.g., `/* eslint-disable */`).
-- **Global Configuration**: Exceptions (like `unbound-method` in tests) must be handled in `eslint.config.mjs` using overrides for specific file patterns (`.spec.ts`, `.e2e-spec.ts`).
-- **Type Safety**: All variables and function returns in tests must be properly typed. Avoid `any` whenever possible.
-- **CI Readiness**: Before committing, the following must pass locally:
-  - `pnpm run lint`
-  - `pnpm run test`
-  - `pnpm run build`
-
-TypeScript Standards:
-- **Project Context**: All files (including tests and apps) must be included in `tsconfig.json` to ensure the compiler and linter have full context for type inference.
-- **Strict Mode**: Maintain strict type checking to catch errors early.
-
-CI/CD
-...
-
-Continuous Integration will be handled by GitHub Actions.
-
-CI pipeline responsibilities:
-
-install dependencies
-
-run lint
-
-run tests
-
-validate build
-
-Planned Features
-
-Future improvements include:
-
-database integration (PostgreSQL)
-
-ORM integration (Prisma or TypeORM)
-
-authentication (JWT)
-
-background job queues
-
-containerization with Docker
-
-horizontal scalability
-
-monitoring and logging
-
-Design Philosophy
-
-DevBoard prioritizes:
-
-simplicity
-
-modularity
-
-testability
-
-scalability
-
-Every feature should be designed to evolve without breaking existing modules.
+CI Readiness:
+Before committing, ensure the following pass:
+- `pnpm run lint`
+- `pnpm run test`
+- `pnpm run build`
+- `npx prisma generate` (to ensure types are up to date)

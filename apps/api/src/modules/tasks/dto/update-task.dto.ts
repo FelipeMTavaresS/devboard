@@ -1,19 +1,16 @@
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MinLength,
-} from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import { Priority } from '@prisma/client';
 
 export class UpdateTaskDto {
   @IsString()
-  @IsNotEmpty()
-  @MinLength(3)
   @IsOptional()
   title?: string;
 
   @IsBoolean()
   @IsOptional()
   completed?: boolean;
+
+  @IsEnum(Priority)
+  @IsOptional()
+  priority?: Priority;
 }

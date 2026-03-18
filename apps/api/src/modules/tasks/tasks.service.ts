@@ -1,79 +1,102 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Task } from './task.entity';
-import { randomUUID } from 'crypto';
+import { Task, Priority } from '@prisma/client';
+import { PrismaService } from '../../database/prisma.service';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
-  private tasks: Task[] = [];
+  constructor(private readonly prisma: PrismaService) {}
 
-  create(title: string): Task {
-    const task: Task = {
-      id: randomUUID(),
-      title,
-      completed: false,
-      createdAt: new Date(),
-    };
-
-    this.tasks.push(task);
-    return task;
+  async create(title: string, priority?: Priority): Promise<Task> {
+    return this.prisma.task.create({
+      data: {
+        title,
+        priority: priority ?? Priority.MEDIUM,
+      },
+    });
   }
 
-  findAll(): Task[] {
-    return this.tasks;
+  async findAll(): Promise<Task[]> {
+    return this.prisma.task.findMany();
   }
 
-  findOne(id: string): Task {
-    const task = this.tasks.find((t) => t.id === id);
+  async findOne(id: string): Promise<Task> {
+    const task = await this.prisma.task.findUnique({
+      where: { id },
+    });
+
     if (!task) {
       throw new NotFoundException(`Task with ID "${id}" not found`);
     }
-    return task;
-  }
-
-  complete(id: string): Task {
-    const task = this.findOne(id);
-    task.completed = true;
-    return task;
-  }
-
-  remove(id: string): void {
-    const task = this.findOne(id);
-    const taskIndex = this.tasks.indexOf(task);
-    this.tasks.splice(taskIndex, 1);
-  }
-
-  update(id: string, updateTaskDto: UpdateTaskDto): Task {
-    const task = this.findOne(id);
-
-    if (updateTaskDto.title !== undefined) {
-      task.title = updateTaskDto.title;
-    }
-
-    if (updateTaskDto.completed !== undefined) {
-      task.completed = updateTaskDto.completed;
-    }
 
     return task;
   }
 
-  findCompleted(): Task[] {
-    return this.tasks.filter((task) => task.completed);
+  async complete(id: string): Promise<Task> {
+    await this.findOne(id);
+
+    return this.prisma.task.update({
+      where: { id },
+      data: { completed: true },
+    });
   }
 
-  findPending(): Task[] {
-    return this.tasks.filter((task) => !task.completed);
+  async remove(id: string): Promise<void> {
+    await this.findOne(id);
+
+    await this.prisma.task.delete({
+      where: { id },
+    });
   }
 
-  getStats() {
-    const total = this.tasks.length;
-    const completed = this.tasks.filter((task) => task.completed).length;
+  async update(id: string, updateTaskDto: UpdateTaskDto): Promise<Task> {
+    await this.findOne(id);
+
+    return this.prisma.task.update({
+      where: { id },
+      data: updateTaskDto,
+    });
+  }
+
+  async findCompleted(): Promise<Task[]> {
+    return this.prisma.task.findMany({
+      where: { completed: true },
+    });
+  }
+
+  async findPending(): Promise<Task[]> {
+    return this.prisma.task.findMany({
+      where: { completed: false },
+    });
+  }
+
+  async findByPriority(priority: Priority): Promise<Task[]> {
+    return this.prisma.task.findMany({
+      where: { priority },
+    });
+  }
+
+  async getStats() {
+    const total = await this.prisma.task.count();
+    const completed = await this.prisma.task.count({
+      where: { completed: true },
+    });
     const pending = total - completed;
+
+    // Optional: stats by priority
+    const low = await this.prisma.task.count({ where: { priority: Priority.LOW } });
+    const medium = await this.prisma.task.count({ where: { priority: Priority.MEDIUM } });
+    const high = await this.prisma.task.count({ where: { priority: Priority.HIGH } });
 
     return {
       total,
       completed,
       pending,
+      byPriority: {
+        low,
+        medium,
+        high,
+      },
     };
   }
 }

@@ -1,8 +1,12 @@
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Priority } from '@prisma/client';
 
 export class CreateTaskDto {
   @IsString()
   @IsNotEmpty()
-  @MinLength(3)
   title: string;
+
+  @IsEnum(Priority)
+  @IsOptional()
+  priority?: Priority;
 }

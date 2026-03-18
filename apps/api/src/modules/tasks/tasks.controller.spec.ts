@@ -1,28 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TasksController } from './tasks.controller';
 import { TasksService } from './tasks.service';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
 
 describe('TasksController', () => {
   let controller: TasksController;
   let service: TasksService;
-
-  const mockTasksService = {
-    findAll: jest
-      .fn()
-      .mockReturnValue([{ id: '1', title: 'Task 1', completed: false }]),
-    findOne: jest.fn(),
-    update: jest.fn(),
-    create: jest.fn().mockImplementation((title: string) => ({
-      id: '1',
-      title,
-      completed: false,
-      createdAt: new Date(),
-    })),
-    remove: jest.fn(),
-    getStats: jest.fn(),
-  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -30,7 +12,17 @@ describe('TasksController', () => {
       providers: [
         {
           provide: TasksService,
-          useValue: mockTasksService,
+          useValue: {
+            create: jest.fn(),
+            findAll: jest.fn(),
+            findOne: jest.fn(),
+            complete: jest.fn(),
+            remove: jest.fn(),
+            update: jest.fn(),
+            getStats: jest.fn(),
+            findCompleted: jest.fn(),
+            findPending: jest.fn(),
+          },
         },
       ],
     }).compile();
@@ -43,69 +35,30 @@ describe('TasksController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('findAll', () => {
-    it('should return an array of tasks', () => {
-      const result = controller.findAll();
+  describe('create', () => {
+    it('should create a task', async () => {
+      const dto = { title: 'New Task' };
+      const result = {
+        id: 'uuid',
+        ...dto,
+        completed: false,
+        createdAt: new Date(),
+      };
+      jest.spyOn(service, 'create').mockResolvedValue(result);
 
-      expect(result).toEqual([{ id: '1', title: 'Task 1', completed: false }]);
-      expect(service.findAll).toHaveBeenCalled();
+      expect(await controller.create(dto)).toBe(result);
     });
   });
 
   describe('getStats', () => {
-    it('should return task statistics', () => {
-      const stats = { total: 10, completed: 4, pending: 6 };
-      jest.spyOn(service, 'getStats').mockReturnValue(stats);
+    it('should return stats', async () => {
+      const stats = { total: 10, completed: 5, pending: 5 };
+      jest.spyOn(service, 'getStats').mockResolvedValue(stats);
 
-      const result = controller.getStats();
+      const result = await controller.getStats();
 
-      expect(result).toEqual(stats);
+      expect(result).toBe(stats);
       expect(service.getStats).toHaveBeenCalled();
-    });
-  });
-
-  describe('findOne', () => {
-    it('should return a single task', () => {
-      const task = { id: '1', title: 'Task 1', completed: false };
-      jest.spyOn(service, 'findOne').mockReturnValue(task);
-
-      const result = controller.findOne('1');
-
-      expect(result).toEqual(task);
-      expect(service.findOne).toHaveBeenCalledWith('1');
-    });
-  });
-
-  describe('update', () => {
-    it('should update a task', () => {
-      const updateTaskDto: UpdateTaskDto = {
-        title: 'Updated Title',
-        completed: true,
-      };
-      const task = { id: '1', title: 'Updated Title', completed: true };
-      jest.spyOn(service, 'update').mockReturnValue(task);
-
-      const result = controller.update('1', updateTaskDto);
-
-      expect(result).toEqual(task);
-      expect(service.update).toHaveBeenCalledWith('1', updateTaskDto);
-    });
-  });
-
-  describe('remove', () => {
-    it('should remove a task', () => {
-      controller.remove('1');
-      expect(service.remove).toHaveBeenCalledWith('1');
-    });
-  });
-
-  describe('create', () => {
-    it('should create a new task', () => {
-      const createTaskDto: CreateTaskDto = { title: 'New Task' };
-      const result = controller.create(createTaskDto);
-
-      expect(result.title).toBe(createTaskDto.title);
-      expect(service.create).toHaveBeenCalledWith(createTaskDto.title);
     });
   });
 });

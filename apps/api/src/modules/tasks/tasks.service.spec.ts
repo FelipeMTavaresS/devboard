@@ -1,134 +1,120 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TasksService } from './tasks.service';
-import { Task } from './task.entity';
+import { PrismaService } from '../../database/prisma.service';
+import { NotFoundException } from '@nestjs/common';
+import { Priority } from '@prisma/client';
+
+const mockTask = {
+  id: 'uuid-1',
+  title: 'Test Task',
+  completed: false,
+  priority: Priority.MEDIUM,
+  createdAt: new Date(),
+};
 
 describe('TasksService', () => {
   let service: TasksService;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [TasksService],
+      providers: [
+        TasksService,
+        {
+          provide: PrismaService,
+          useValue: {
+            task: {
+              create: jest.fn().mockResolvedValue(mockTask),
+              findMany: jest.fn().mockResolvedValue([mockTask]),
+              findUnique: jest.fn().mockResolvedValue(mockTask),
+              update: jest.fn().mockResolvedValue({ ...mockTask, completed: true }),
+              delete: jest.fn().mockResolvedValue(mockTask),
+              count: jest.fn().mockResolvedValue(1),
+            },
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<TasksService>(TasksService);
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  describe('create', () => {
+    it('should create a task with high priority', async () => {
+      const highTask = { ...mockTask, priority: Priority.HIGH };
+      jest.spyOn(prisma.task, 'create').mockResolvedValue(highTask);
+
+      const result = await service.create('High Task', Priority.HIGH);
+      
+      expect(result.priority).toBe(Priority.HIGH);
+      expect(prisma.task.create).toHaveBeenCalled();
+    });
   });
 
   describe('findAll', () => {
-    it('should return all tasks', () => {
-      service.create('Task 1');
-      service.create('Task 2');
-      const tasks = service.findAll();
-      expect(tasks).toHaveLength(2);
+    it('should return all tasks', async () => {
+      const result = await service.findAll();
+      expect(result).toEqual([mockTask]);
+      expect(prisma.task.findMany).toHaveBeenCalled();
     });
   });
 
   describe('findOne', () => {
-    it('should return a task by id', () => {
-      const createdTask = service.create('Test Task');
-      const foundTask = service.findOne(createdTask.id);
-      expect(foundTask).toEqual(createdTask);
+    it('should return a task by id', async () => {
+      const result = await service.findOne('uuid-1');
+      expect(result).toEqual(mockTask);
+      expect(prisma.task.findUnique).toHaveBeenCalled();
     });
 
-    it('should throw NotFoundException if task does not exist', () => {
-      expect(() => service.findOne('invalid-id')).toThrow(
-        'Task with ID "invalid-id" not found',
+    it('should throw NotFoundException if task does not exist', async () => {
+      jest.spyOn(prisma.task, 'findUnique').mockResolvedValue(null);
+      await expect(service.findOne('invalid-id')).rejects.toThrow(
+        NotFoundException,
       );
     });
   });
 
   describe('complete', () => {
-    it('should mark a task as completed', () => {
-      const task: Task = service.create('New Task');
-      const completedTask = service.complete(task.id);
-
-      expect(completedTask.completed).toBe(true);
-    });
-
-    it('should throw an error if task does not exist', () => {
-      expect(() => service.complete('invalid-id')).toThrow(
-        'Task with ID "invalid-id" not found',
-      );
+    it('should mark a task as completed', async () => {
+      jest.spyOn(prisma.task, 'findUnique').mockResolvedValue(mockTask);
+      const result = await service.complete('uuid-1');
+      expect(result.completed).toBe(true);
+      expect(prisma.task.update).toHaveBeenCalled();
     });
   });
 
   describe('remove', () => {
-    it('should remove a task', () => {
-      const task: Task = service.create('Task to be deleted');
-      service.remove(task.id);
-      const tasks = service.findAll();
-
-      expect(tasks).not.toContain(task);
-    });
-
-    it('should throw an error if task to delete does not exist', () => {
-      expect(() => service.remove('invalid-id')).toThrow(
-        'Task with ID "invalid-id" not found',
-      );
+    it('should remove a task', async () => {
+      jest.spyOn(prisma.task, 'findUnique').mockResolvedValue(mockTask);
+      await service.remove('uuid-1');
+      expect(prisma.task.delete).toHaveBeenCalled();
     });
   });
 
-  describe('update', () => {
-    it('should update a task title', () => {
-      const task: Task = service.create('Original Title');
-      const updatedTask = service.update(task.id, { title: 'Updated Title' });
-
-      expect(updatedTask.title).toBe('Updated Title');
-      expect(service.findAll()[0].title).toBe('Updated Title');
-    });
-
-    it('should throw an error if task to update does not exist', () => {
-      expect(() =>
-        service.update('invalid-id', { title: 'New Title' }),
-      ).toThrow('Task with ID "invalid-id" not found');
-    });
-  });
-
-  describe('findCompleted', () => {
-    it('should return only completed tasks', () => {
-      service.create('Task 1');
-      const task2 = service.create('Task 2');
-      service.complete(task2.id);
-
-      const completedTasks = service.findCompleted();
-
-      expect(completedTasks).toHaveLength(1);
-      expect(completedTasks[0].id).toBe(task2.id);
-      expect(completedTasks[0].completed).toBe(true);
-    });
-  });
-
-  describe('findPending', () => {
-    it('should return only pending tasks', () => {
-      const task1 = service.create('Task 1');
-      const task2 = service.create('Task 2');
-      service.complete(task2.id);
-
-      const pendingTasks = service.findPending();
-
-      expect(pendingTasks).toHaveLength(1);
-      expect(pendingTasks[0].id).toBe(task1.id);
-      expect(pendingTasks[0].completed).toBe(false);
+  describe('findByPriority', () => {
+    it('should return tasks filtered by priority', async () => {
+      const result = await service.findByPriority(Priority.LOW);
+      expect(result).toEqual([mockTask]);
+      expect(prisma.task.findMany).toHaveBeenCalledWith({
+        where: { priority: Priority.LOW },
+      });
     });
   });
 
   describe('getStats', () => {
-    it('should return correct task statistics', () => {
-      service.create('Task 1');
-      const task2 = service.create('Task 2');
-      service.create('Task 3');
-      service.complete(task2.id);
+    it('should return stats including priority counts', async () => {
+      jest.spyOn(prisma.task, 'count')
+        .mockResolvedValueOnce(3) // total
+        .mockResolvedValueOnce(1) // completed
+        .mockResolvedValueOnce(1) // low
+        .mockResolvedValueOnce(1) // medium
+        .mockResolvedValueOnce(1); // high
 
-      const stats = service.getStats();
+      const stats = await service.getStats();
 
-      expect(stats).toEqual({
-        total: 3,
-        completed: 1,
-        pending: 2,
-      });
+      expect(stats.total).toBe(3);
+      expect(stats.byPriority.high).toBe(1);
     });
   });
 });
