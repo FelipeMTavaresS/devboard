@@ -22,6 +22,11 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {}
-    },
-    "include": ["src", "apps", "libs", "test"]
-    }
+  },
+  "include": [
+    "src",
+    "apps",
+    "libs",
+    "test"
+  ]
+}
