@@ -6,6 +6,14 @@ export class CreateTaskDto {
   @IsNotEmpty()
   title: string;
 
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsString()
+  @IsOptional()
+  category?: string;
+
   @IsEnum(Priority)
   @IsOptional()
   priority?: Priority;

@@ -22,6 +22,8 @@ export class TasksController {
     return this.tasksService.create(
       createTaskDto.title,
       createTaskDto.priority,
+      createTaskDto.description,
+      createTaskDto.category,
     );
   }
 

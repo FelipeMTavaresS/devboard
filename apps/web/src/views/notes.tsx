@@ -1,15 +1,20 @@
+"use client";
+
 import { useState, useCallback } from "react";
 import { useNotes, useCreateNote, useDeleteNote } from "@/hooks/use-notes";
 import { useDropzone } from "react-dropzone";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadCloud, FileImage, Trash2, Image as ImageIcon } from "lucide-react";
 import { format } from "date-fns";
-import type { Note } from "@workspace/api-client-react";
+import { enUS, ptBR } from "date-fns/locale";
+import type { Note } from "@/hooks/use-notes";
+import { useLanguage } from "@/hooks/use-language";
 
 export default function Notes() {
   const { data: notes, isLoading } = useNotes();
   const createNote = useCreateNote();
   const [uploadingName, setUploadingName] = useState<string | null>(null);
+  const { language, t } = useLanguage();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -17,14 +22,13 @@ export default function Notes() {
 
     setUploadingName(file.name);
 
-    // Mock upload: Read file as Data URL to store in the DB 
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result as string;
       createNote.mutate(
         { 
           data: { 
-            title: file.name.split('.')[0] || "Untitled Note", 
+            title: file.name.split('.')[0] || t.notes.gallery.untitled, 
             imageUrl: base64String 
           } 
         },
@@ -34,7 +38,7 @@ export default function Notes() {
       );
     };
     reader.readAsDataURL(file);
-  }, [createNote]);
+  }, [createNote, t]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
     onDrop,
@@ -46,8 +50,8 @@ export default function Notes() {
   return (
     <div className="flex flex-col gap-10 h-full pb-10">
       <header>
-        <h1 className="text-3xl font-bold text-foreground tracking-tight">Notes</h1>
-        <p className="text-muted-foreground mt-2 text-base">Capture and store images of your notes, diagrams, and sketches.</p>
+        <h1 className="text-3xl font-bold text-foreground tracking-tight">{t.notes.title}</h1>
+        <p className="text-muted-foreground mt-2 text-base">{t.notes.subtitle}</p>
       </header>
 
       {/* Upload Zone */}
@@ -64,16 +68,18 @@ export default function Notes() {
           <UploadCloud size={28} />
         </div>
         <h3 className="text-lg font-semibold mb-1">
-          {isDragActive ? "Drop image here..." : "Click or drag to upload"}
+          {isDragActive ? t.notes.upload.active : t.notes.upload.inactive}
         </h3>
         <p className="text-muted-foreground text-sm max-w-sm">
-          Supports JPG, PNG, WEBP.
+          {t.notes.upload.formats}
         </p>
         
         {uploadingName && (
           <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex flex-col items-center justify-center z-10">
             <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" />
-            <p className="font-medium text-sm text-foreground">Uploading {uploadingName}...</p>
+            <p className="font-medium text-sm text-foreground">
+              {t.notes.upload.uploading.replace('{name}', uploadingName)}
+            </p>
           </div>
         )}
       </div>
@@ -82,7 +88,7 @@ export default function Notes() {
       <div>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold flex items-center gap-2">
-            Gallery
+            {t.notes.gallery.title}
           </h2>
         </div>
         
@@ -103,9 +109,9 @@ export default function Notes() {
             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
               <ImageIcon className="text-muted-foreground" size={32} />
             </div>
-            <h3 className="text-xl font-semibold text-foreground">No notes yet</h3>
+            <h3 className="text-xl font-semibold text-foreground">{t.notes.gallery.empty_title}</h3>
             <p className="text-muted-foreground text-sm mt-2">
-              Upload an image of your notes to see them here.
+              {t.notes.gallery.empty_desc}
             </p>
           </div>
         )}
@@ -116,9 +122,11 @@ export default function Notes() {
 
 function NoteCard({ note }: { note: Note }) {
   const deleteNote = useDeleteNote();
+  const { language, t } = useLanguage();
+  const locale = language === 'pt' ? ptBR : enUS;
 
   const handleDelete = () => {
-    if (confirm("Delete this note?")) {
+    if (confirm(t.notes.gallery.delete_confirm)) {
       deleteNote.mutate({ id: note.id });
     }
   };
@@ -151,7 +159,7 @@ function NoteCard({ note }: { note: Note }) {
             onClick={handleDelete}
             disabled={deleteNote.isPending}
             className="p-2.5 bg-background text-foreground rounded-full transform scale-90 group-hover:scale-100 transition-all hover:text-destructive"
-            title="Delete note"
+            title={language === 'pt' ? 'Excluir nota' : 'Delete note'}
           >
             <Trash2 size={18} />
           </button>
@@ -164,7 +172,7 @@ function NoteCard({ note }: { note: Note }) {
             {note.title}
           </h3>
           <p className="text-xs text-muted-foreground mt-1">
-            {format(new Date(note.createdAt), 'MMM d, yyyy')}
+            {format(new Date(note.createdAt), "MMM d, yyyy", { locale })}
           </p>
         </div>
       </div>

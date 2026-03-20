@@ -1,0 +1,97 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "notes": "Notes"
+  },
+  "home": {
+    "status": "in progress study project",
+    "title": "DevBoard",
+    "intro_p1": "This project has no fixed goal. The idea is to build as I study — each new thing I learn, I test in here. The result is a growing set of experiments: independent features that coexist and evolve over time.",
+    "intro_p2": "It started as a task manager. It's becoming whatever the learning process requires.",
+    "what_is_here": "What's in here",
+    "philosophy": {
+      "label": "Project philosophy:",
+      "text": "build first, refine later. If an idea seems relevant to implement, it goes in here — the project grows organically, guided by learning."
+    },
+    "version": "v0.1 · continuous development",
+    "module_status": {
+      "active": "active",
+      "wip": "building",
+      "planned": "planned"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "status": "Studying in progress",
+    "stats": {
+      "total": "Total",
+      "done": "Done",
+      "pending": "Pending"
+    },
+    "completion": {
+      "label": "Completion",
+      "of_tasks": "of tasks"
+    },
+    "recent_tasks": {
+      "title": "Recent Tasks",
+      "see_all": "See all",
+      "empty": "No tasks yet.",
+      "create_first": "Create your first task"
+    }
+  },
+  "tasks": {
+    "title": "Tasks",
+    "subtitle": "Manage your goals and to-do list.",
+    "new_task": "New Task",
+    "search_placeholder": "Search tasks...",
+    "filters": {
+      "all": "All Status",
+      "pending": "Pending",
+      "completed": "Completed"
+    },
+    "empty": {
+      "title": "No tasks found",
+      "filtered": "We couldn't find any tasks matching your filters.",
+      "none": "Your list is clear. Create a task to get started.",
+      "clear": "Clear Filters"
+    },
+    "delete_confirm": "Are you sure you want to delete this task?",
+    "priority": {
+      "label": "Priority",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "dialog": {
+      "title": "Create Task",
+      "form": {
+        "title_label": "Task Title",
+        "title_placeholder": "E.g., Review PR #402",
+        "desc_label": "Description (Optional)",
+        "desc_placeholder": "Add some details...",
+        "category_label": "Category",
+        "category_placeholder": "e.g. Work",
+        "cancel": "Cancel",
+        "submit": "Create Task"
+      }
+    }
+  },
+  "notes": {
+    "title": "Notes",
+    "subtitle": "Capture and store images of your notes, diagrams, and sketches.",
+    "upload": {
+      "active": "Drop image here...",
+      "inactive": "Click or drag to upload",
+      "formats": "Supports JPG, PNG, WEBP.",
+      "uploading": "Uploading {name}..."
+    },
+    "gallery": {
+      "title": "Gallery",
+      "empty_title": "No notes yet",
+      "empty_desc": "Upload an image of your notes to see them here.",
+      "delete_confirm": "Delete this note?",
+      "untitled": "Untitled Note"
+    }
+  }
+}

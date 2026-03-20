@@ -27,10 +27,16 @@ apps/
       app.controller.ts
       app.service.ts
 
+  web/ (Next.js Frontend)
+    src/
+      views/ (UI Components)
+      hooks/ (React Hooks)
+
 libs/ (Shared logic between apps)
 
 prisma/
   schema.prisma (Database Schema)
+  migrations/ (Database Migrations)
 
 Architecture Rules
 
@@ -58,6 +64,8 @@ The project uses Prisma ORM for type-safe database access.
 Model: Task
 - id: String (UUID)
 - title: String
+- description: String (Optional)
+- category: String (Optional)
 - completed: Boolean (Default: false)
 - priority: Enum (LOW, MEDIUM, HIGH)
 - createdAt: DateTime
@@ -87,8 +95,20 @@ Example endpoints:
 GET    /tasks (Supports ?priority=HIGH filter)
 POST   /tasks
 GET    /tasks/stats (Includes priority statistics)
+GET    /tasks/completed
+GET    /tasks/pending
+GET    /tasks/:id
 PATCH  /tasks/:id/complete
+PATCH  /tasks/:id (Edit task)
 DELETE /tasks/:id
+
+Request Body for POST/PATCH:
+{
+  "title": "Task title",
+  "description": "Optional description",
+  "category": "Optional category",
+  "priority": "LOW|MEDIUM|HIGH"
+}
 
 Coding Standards
 
@@ -115,7 +135,7 @@ Commit style:
 
 CI Readiness:
 Before committing, ensure the following pass:
-- `pnpm run lint`
+- `pnpm run lint` (backend only: `npx eslint "apps/api/**/*.ts" "apps/tasks/**/*.ts" --fix`)
 - `pnpm run test`
 - `pnpm run build`
 - `npx prisma generate` (to ensure types are up to date)

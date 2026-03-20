@@ -1,0 +1,97 @@
+{
+  "nav": {
+    "dashboard": "Painel",
+    "tasks": "Tarefas",
+    "notes": "Notas"
+  },
+  "home": {
+    "status": "projeto de estudo em andamento",
+    "title": "DevBoard",
+    "intro_p1": "Esse projeto não tem um objetivo fixo. A ideia é ir construindo à medida que estudo — cada coisa nova que aprendo, testo aqui dentro. O resultado é um conjunto crescente de experimentos: funcionalidades independentes que coexistem e evoluem ao longo do tempo.",
+    "intro_p2": "Começou como um gerenciador de tarefas. Vai se tornando o que o aprendizado pedir.",
+    "what_is_here": "O que tem aqui",
+    "philosophy": {
+      "label": "Filosofia do projeto:",
+      "text": "construir primeiro, refinar depois. Se uma ideia parece relevante de implementar, ela entra aqui — o projeto cresce de forma orgânica, guiado pelo aprendizado."
+    },
+    "version": "v0.1 · em desenvolvimento contínuo",
+    "module_status": {
+      "active": "ativo",
+      "wip": "em construção",
+      "planned": "planejado"
+    }
+  },
+  "dashboard": {
+    "title": "Painel",
+    "status": "Estudos em andamento",
+    "stats": {
+      "total": "Total",
+      "done": "Concluídas",
+      "pending": "Pendentes"
+    },
+    "completion": {
+      "label": "Conclusão",
+      "of_tasks": "das tarefas"
+    },
+    "recent_tasks": {
+      "title": "Tarefas Recentes",
+      "see_all": "Ver tudo",
+      "empty": "Nenhuma tarefa ainda.",
+      "create_first": "Crie sua primeira tarefa"
+    }
+  },
+  "tasks": {
+    "title": "Tarefas",
+    "subtitle": "Gerencie seus objetivos e lista de afazeres.",
+    "new_task": "Nova Tarefa",
+    "search_placeholder": "Buscar tarefas...",
+    "filters": {
+      "all": "Todos os Status",
+      "pending": "Pendentes",
+      "completed": "Concluídas"
+    },
+    "empty": {
+      "title": "Nenhuma tarefa encontrada",
+      "filtered": "Não encontramos nenhuma tarefa que coincida com seus filtros.",
+      "none": "Sua lista está limpa. Crie uma tarefa para começar.",
+      "clear": "Limpar Filtros"
+    },
+    "delete_confirm": "Tem certeza que deseja excluir esta tarefa?",
+    "priority": {
+      "label": "Prioridade",
+      "low": "Baixa",
+      "medium": "Média",
+      "high": "Alta"
+    },
+    "dialog": {
+      "title": "Criar Tarefa",
+      "form": {
+        "title_label": "Título da Tarefa",
+        "title_placeholder": "Ex: Revisar PR #402",
+        "desc_label": "Descrição (Opcional)",
+        "desc_placeholder": "Adicione alguns detalhes...",
+        "category_label": "Categoria",
+        "category_placeholder": "Ex: Trabalho",
+        "cancel": "Cancelar",
+        "submit": "Criar Tarefa"
+      }
+    }
+  },
+  "notes": {
+    "title": "Notas",
+    "subtitle": "Capture e armazene imagens de suas anotações, diagramas e esboços.",
+    "upload": {
+      "active": "Solte a imagem aqui...",
+      "inactive": "Clique ou arraste para enviar",
+      "formats": "Suporta JPG, PNG, WEBP.",
+      "uploading": "Enviando {name}..."
+    },
+    "gallery": {
+      "title": "Galeria",
+      "empty_title": "Nenhuma nota ainda",
+      "empty_desc": "Envie uma imagem de suas notas para vê-las aqui.",
+      "delete_confirm": "Excluir esta nota?",
+      "untitled": "Nota sem título"
+    }
+  }
+}

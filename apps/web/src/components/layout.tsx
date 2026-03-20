@@ -3,59 +3,65 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, CheckSquare, BookOpen, Hexagon } from "lucide-react";
+import { LayoutDashboard, CheckSquare, BookOpen, Hexagon, Languages } from "lucide-react";
 import { motion } from "framer-motion";
-
-// Each icon gets its own organic offset and float animation
-const navItems = [
-  {
-    href: "/dashboard",
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    // top, slightly tilted
-    style: { bottom: 88, right: 22 },
-    rotate: -8,
-    floatY: [-4, 3, -4],
-    floatDuration: 3.2,
-  },
-  {
-    href: "/tasks",
-    label: "Tasks",
-    icon: CheckSquare,
-    // center, slightly right
-    style: { bottom: 46, right: 48 },
-    rotate: 5,
-    floatY: [3, -5, 3],
-    floatDuration: 2.8,
-  },
-  {
-    href: "/notes",
-    label: "Notes",
-    icon: BookOpen,
-    // bottom-right
-    style: { bottom: 12, right: 14 },
-    rotate: -4,
-    floatY: [-3, 4, -3],
-    floatDuration: 3.6,
-  },
-];
-
-const hexClip = "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)";
+import { useLanguage } from "@/hooks/use-language";
 
 export function Layout({ children }: { children: ReactNode }) {
   const location = usePathname();
+  const { language, toggleLanguage, t } = useLanguage();
+
+  const navItems = [
+    {
+      href: "/dashboard",
+      label: t.nav.dashboard,
+      icon: LayoutDashboard,
+      style: { bottom: 88, right: 22 },
+      rotate: -8,
+      floatY: [-4, 3, -4],
+      floatDuration: 3.2,
+    },
+    {
+      href: "/tasks",
+      label: t.nav.tasks,
+      icon: CheckSquare,
+      style: { bottom: 46, right: 48 },
+      rotate: 5,
+      floatY: [3, -5, 3],
+      floatDuration: 2.8,
+    },
+    {
+      href: "/notes",
+      label: t.nav.notes,
+      icon: BookOpen,
+      style: { bottom: 12, right: 14 },
+      rotate: -4,
+      floatY: [-3, 4, -3],
+      floatDuration: 3.6,
+    },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col w-full bg-background">
-      {/* Top Header — logo only */}
+      {/* Top Header */}
       <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center">
-          <div className="flex items-center gap-2">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="bg-primary p-1.5 rounded-lg text-primary-foreground">
               <Hexagon size={20} strokeWidth={2.5} />
             </div>
             <h1 className="text-xl font-bold tracking-tight text-foreground">DevBoard</h1>
-          </div>
+          </Link>
+
+          {/* Language Toggle */}
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full border bg-secondary/50 hover:bg-secondary transition-colors text-xs font-medium text-muted-foreground hover:text-foreground"
+            title={language === "en" ? "Switch to Portuguese" : "Mudar para Inglês"}
+          >
+            <Languages size={14} className="text-primary/70" />
+            <span>{language.toUpperCase()}</span>
+          </button>
         </div>
       </header>
 
@@ -106,7 +112,6 @@ export function Layout({ children }: { children: ReactNode }) {
                     }
                   `}
                 >
-                  {/* Hexagon outline highlight */}
                   <svg
                     className="absolute inset-0 w-full h-full"
                     viewBox="0 0 44 44"
@@ -119,7 +124,6 @@ export function Layout({ children }: { children: ReactNode }) {
                       fill="none"
                     />
                   </svg>
-                  {/* Icon */}
                   <item.icon
                     size={14}
                     strokeWidth={2.2}
@@ -128,7 +132,6 @@ export function Layout({ children }: { children: ReactNode }) {
                 </div>
               </Link>
 
-              {/* Tooltip */}
               <span className="
                 absolute right-[calc(100%+8px)] top-1/2 -translate-y-1/2
                 whitespace-nowrap px-2 py-1 rounded text-xs font-semibold

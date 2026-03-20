@@ -1,8 +1,16 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["*.spock.replit.dev", "*.replit.dev"],
+  allowedDevOrigins: ['*.spock.replit.dev', '*.replit.dev'],
   devIndicators: false,
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:3000/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

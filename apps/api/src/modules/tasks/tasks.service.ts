@@ -7,11 +7,18 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(title: string, priority?: Priority): Promise<Task> {
+  async create(
+    title: string,
+    priority?: Priority,
+    description?: string,
+    category?: string,
+  ): Promise<Task> {
     return this.prisma.task.create({
       data: {
         title,
         priority: priority ?? Priority.MEDIUM,
+        description,
+        category,
       },
     });
   }

@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Priority {
@@ -17,11 +18,13 @@ enum Priority {
 }
 
 model Task {
-  id        String   @id @default(uuid())
-  title     String
-  completed Boolean  @default(false)
-  priority  Priority @default(MEDIUM)
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  category    String?
+  completed   Boolean  @default(false)
+  priority    Priority @default(MEDIUM)
+  createdAt   DateTime @default(now())
 
   @@map("tasks")
 }

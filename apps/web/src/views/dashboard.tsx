@@ -1,3 +1,5 @@
+"use client";
+
 import { useTaskStats, useTasks } from "@/hooks/use-tasks";
 import { motion } from "framer-motion";
 import {
@@ -9,7 +11,9 @@ import {
   Flame,
 } from "lucide-react";
 import { format } from "date-fns";
+import { enUS, ptBR } from "date-fns/locale";
 import Link from "next/link";
+import { useLanguage } from "@/hooks/use-language";
 
 const fadeUp = (delay: number) => ({
   initial: { opacity: 0, y: 12 },
@@ -20,7 +24,9 @@ const fadeUp = (delay: number) => ({
 export default function Dashboard() {
   const { data: stats } = useTaskStats();
   const { data: allTasks, isLoading } = useTasks({ status: "all" });
+  const { language, t } = useLanguage();
 
+  const locale = language === 'pt' ? ptBR : enUS;
   const recent = allTasks?.slice(0, 5) || [];
   const progress = Math.round(stats?.progress || 0);
   const circumference = 2 * Math.PI * 36;
@@ -32,20 +38,20 @@ export default function Dashboard() {
       <motion.div {...fadeUp(0)} className="flex items-start justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
-            {format(new Date(), "EEEE, MMMM d")}
+            {format(new Date(), "EEEE, MMMM d", { locale })}
           </p>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">Dashboard</h1>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">{t.dashboard.title}</h1>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full border">
           <Flame size={13} className="text-primary" />
-          <span>Studying in progress</span>
+          <span>{t.dashboard.status}</span>
         </div>
       </motion.div>
 
       {/* ── Stats Row ── */}
       <div className="grid grid-cols-3 gap-4">
         <StatCard
-          label="Total"
+          label={t.dashboard.stats.total}
           value={stats?.total ?? "—"}
           icon={<ListTodo size={16} />}
           color="text-primary"
@@ -53,7 +59,7 @@ export default function Dashboard() {
           delay={0.1}
         />
         <StatCard
-          label="Done"
+          label={t.dashboard.stats.done}
           value={stats?.completed ?? "—"}
           icon={<CheckCircle2 size={16} />}
           color="text-emerald-600"
@@ -61,7 +67,7 @@ export default function Dashboard() {
           delay={0.15}
         />
         <StatCard
-          label="Pending"
+          label={t.dashboard.stats.pending}
           value={stats?.pending ?? "—"}
           icon={<CircleDashed size={16} />}
           color="text-amber-500"
@@ -79,7 +85,7 @@ export default function Dashboard() {
           className="bg-card border rounded-2xl p-6 flex flex-col items-center justify-center gap-4 shadow-sm"
         >
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Completion
+            {t.dashboard.completion.label}
           </p>
 
           <div className="relative w-32 h-32">
@@ -97,13 +103,13 @@ export default function Dashboard() {
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-2xl font-bold text-foreground">{progress}%</span>
-              <span className="text-[10px] text-muted-foreground font-medium">of tasks</span>
+              <span className="text-[10px] text-muted-foreground font-medium">{t.dashboard.completion.of_tasks}</span>
             </div>
           </div>
 
           <div className="w-full space-y-2">
-            <BarRow label="Done" count={stats?.completed || 0} total={stats?.total || 1} color="bg-emerald-500" />
-            <BarRow label="Pending" count={stats?.pending || 0} total={stats?.total || 1} color="bg-amber-400" />
+            <BarRow label={t.dashboard.stats.done} count={stats?.completed || 0} total={stats?.total || 1} color="bg-emerald-500" />
+            <BarRow label={t.dashboard.stats.pending} count={stats?.pending || 0} total={stats?.total || 1} color="bg-amber-400" />
           </div>
         </motion.div>
 
@@ -113,12 +119,12 @@ export default function Dashboard() {
           className="lg:col-span-2 bg-card border rounded-2xl shadow-sm overflow-hidden"
         >
           <div className="flex items-center justify-between px-6 py-4 border-b">
-            <h2 className="font-semibold text-sm text-foreground">Recent Tasks</h2>
+            <h2 className="font-semibold text-sm text-foreground">{t.dashboard.recent_tasks.title}</h2>
             <Link
               href="/tasks"
               className="flex items-center gap-1 text-xs font-medium text-primary hover:underline"
             >
-              See all <ArrowRight size={13} />
+              {t.dashboard.recent_tasks.see_all} <ArrowRight size={13} />
             </Link>
           </div>
 
@@ -131,8 +137,8 @@ export default function Dashboard() {
           ) : recent.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <ListTodo size={32} className="text-muted-foreground/40 mb-3" />
-              <p className="text-sm text-muted-foreground">No tasks yet.</p>
-              <Link href="/tasks" className="mt-2 text-xs text-primary hover:underline">Create your first task</Link>
+              <p className="text-sm text-muted-foreground">{t.dashboard.recent_tasks.empty}</p>
+              <Link href="/tasks" className="mt-2 text-xs text-primary hover:underline">{t.dashboard.recent_tasks.create_first}</Link>
             </div>
           ) : (
             <ul className="divide-y">
@@ -159,7 +165,7 @@ export default function Dashboard() {
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
                         <CalendarDays size={10} />
-                        {format(new Date(task.createdAt), "MMM d")}
+                        {format(new Date(task.createdAt), "MMM d", { locale })}
                       </span>
                       {task.category && (
                         <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-primary/8 text-primary">
@@ -174,7 +180,7 @@ export default function Dashboard() {
                       ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
                       : "bg-amber-50 text-amber-600 border border-amber-100"
                     }`}>
-                    {task.completed ? "Done" : "Pending"}
+                    {task.completed ? t.dashboard.stats.done : t.dashboard.stats.pending}
                   </span>
                 </motion.li>
               ))}
