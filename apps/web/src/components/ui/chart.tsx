@@ -1,1 +1,0 @@
-// Chart components were removed as they were not integrated into the application and were causing build errors.

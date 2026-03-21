@@ -1,15 +1,47 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, CheckSquare, BookOpen, Hexagon, Languages } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/hooks/use-language";
+import { useQueryClient } from "@tanstack/react-query";
+
+const API_BASE_URL = '/api';
 
 export function Layout({ children }: { children: ReactNode }) {
   const location = usePathname();
   const { language, toggleLanguage, t } = useLanguage();
+  const queryClient = useQueryClient();
+
+  // Prefetch de dados ao montar o layout
+  useEffect(() => {
+    // Prefetch tasks e stats para navegação instantânea
+    queryClient.prefetchQuery({
+      queryKey: ['tasks', { status: 'all' }],
+      queryFn: async () => {
+        const response = await fetch(`${API_BASE_URL}/tasks`);
+        if (!response.ok) throw new Error('Failed to fetch tasks');
+        return response.json();
+      },
+      staleTime: 1000 * 60 * 5,
+    });
+
+    queryClient.prefetchQuery({
+      queryKey: ['task-stats'],
+      queryFn: async () => {
+        const response = await fetch(`${API_BASE_URL}/tasks/stats`);
+        if (!response.ok) throw new Error('Failed to fetch stats');
+        const data = await response.json();
+        return {
+          ...data,
+          progress: data.total > 0 ? (data.completed / data.total) * 100 : 0,
+        };
+      },
+      staleTime: 1000 * 60 * 5,
+    });
+  }, [queryClient]);
 
   const navItems = [
     {

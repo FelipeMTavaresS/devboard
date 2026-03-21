@@ -75,6 +75,15 @@
         "cancel": "Cancelar",
         "submit": "Criar Tarefa"
       }
+    },
+    "toast": {
+      "create_success": "Tarefa criada com sucesso!",
+      "create_error": "Falha ao criar tarefa. Tente novamente.",
+      "update_success": "Tarefa atualizada com sucesso!",
+      "update_error": "Falha ao atualizar tarefa. Tente novamente.",
+      "delete_success": "Tarefa excluída com sucesso!",
+      "delete_error": "Falha ao excluir tarefa. Tente novamente.",
+      "connection_error": "Erro de conexão. Verifique se o servidor está rodando."
     }
   },
   "notes": {

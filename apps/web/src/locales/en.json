@@ -75,6 +75,15 @@
         "cancel": "Cancel",
         "submit": "Create Task"
       }
+    },
+    "toast": {
+      "create_success": "Task created successfully!",
+      "create_error": "Failed to create task. Please try again.",
+      "update_success": "Task updated successfully!",
+      "update_error": "Failed to update task. Please try again.",
+      "delete_success": "Task deleted successfully!",
+      "delete_error": "Failed to delete task. Please try again.",
+      "connection_error": "Connection error. Check if the server is running."
     }
   },
   "notes": {

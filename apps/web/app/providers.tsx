@@ -14,7 +14,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
         defaultOptions: {
           queries: {
             refetchOnWindowFocus: false,
-            staleTime: 1000 * 60 * 5,
+            staleTime: 1000 * 60 * 5, // 5 minutos até considerar stale
+            gcTime: 1000 * 60 * 30, // 30 minutos no cache (garbage collection)
+            retry: 1, // Apenas 1 retry em caso de erro
+            refetchOnMount: false, // Não refetch se dados ainda fresh
           },
         },
       }),

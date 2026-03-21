@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import { enUS, ptBR } from "date-fns/locale";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/hooks/use-language";
+import { useToast } from "@/hooks/use-toast";
 
 type GetTasksStatus = "all" | "pending" | "completed";
 type CreateTaskPriority = "LOW" | "MEDIUM" | "HIGH";
@@ -104,15 +105,42 @@ function TaskCard({ task }: { task: Task }) {
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
   const { language, t } = useLanguage();
+  const { toast } = useToast();
   const locale = language === 'pt' ? ptBR : enUS;
 
   const handleToggle = () => {
-    updateTask.mutate({ id: task.id, data: { completed: !task.completed } });
+    updateTask.mutate(
+      { id: task.id, data: { completed: !task.completed } },
+      {
+        onError: () => {
+          toast({
+            title: t.tasks.toast.update_error,
+            variant: "destructive",
+          });
+        }
+      }
+    );
   };
 
   const handleDelete = () => {
     if (confirm(t.tasks.delete_confirm)) {
-      deleteTask.mutate({ id: task.id });
+      deleteTask.mutate(
+        { id: task.id },
+        {
+          onSuccess: () => {
+            toast({
+              title: t.tasks.toast.delete_success,
+              variant: "default",
+            });
+          },
+          onError: () => {
+            toast({
+              title: t.tasks.toast.delete_error,
+              variant: "destructive",
+            });
+          }
+        }
+      );
     }
   };
 
@@ -212,6 +240,7 @@ function CreateTaskDialog({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
   const [priority, setPriority] = useState<CreateTaskPriority>("MEDIUM");
   const [category, setCategory] = useState("");
   const { t } = useLanguage();
+  const { toast } = useToast();
   
   const createTask = useCreateTask();
 
@@ -235,6 +264,22 @@ function CreateTaskDialog({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
           setPriority("MEDIUM");
           setCategory("");
           onClose();
+          toast({
+            title: t.tasks.toast.create_success,
+            variant: "default",
+          });
+        },
+        onError: (error) => {
+          const isConnectionError = error.message.includes('fetch') || 
+            error.message.includes('network') ||
+            error.message.includes('Failed to fetch');
+          
+          toast({
+            title: isConnectionError 
+              ? t.tasks.toast.connection_error 
+              : t.tasks.toast.create_error,
+            variant: "destructive",
+          });
         }
       }
     );
@@ -299,7 +344,8 @@ function EditTaskDialog({ isOpen, onClose, task }: { isOpen: boolean, onClose: (
   const [description, setDescription] = useState(task.description || "");
   const [category, setCategory] = useState(task.category || "");
   const [priority, setPriority] = useState<CreateTaskPriority>(task.priority);
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const { toast } = useToast();
   
   const updateTask = useUpdateTask();
 
@@ -320,13 +366,26 @@ function EditTaskDialog({ isOpen, onClose, task }: { isOpen: boolean, onClose: (
       {
         onSuccess: () => {
           onClose();
+          toast({
+            title: t.tasks.toast.update_success,
+            variant: "default",
+          });
+        },
+        onError: () => {
+          toast({
+            title: t.tasks.toast.update_error,
+            variant: "destructive",
+          });
         }
       }
     );
   };
 
+  const editTitle = language === 'pt' ? 'Editar Tarefa' : 'Edit Task';
+  const saveLabel = language === 'pt' ? 'Salvar' : 'Save';
+
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} title="Editar Tarefa">
+    <Dialog isOpen={isOpen} onClose={onClose} title={editTitle}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1.5 text-foreground">{t.tasks.dialog.form.title_label}</label>
@@ -371,7 +430,7 @@ function EditTaskDialog({ isOpen, onClose, task }: { isOpen: boolean, onClose: (
         <div className="pt-6 flex justify-end gap-3 border-t border-border/50 mt-6">
           <Button type="button" variant="ghost" onClick={onClose}>{t.tasks.dialog.form.cancel}</Button>
           <Button type="submit" isLoading={updateTask.isPending}>
-            Salvar
+            {saveLabel}
           </Button>
         </div>
       </form>

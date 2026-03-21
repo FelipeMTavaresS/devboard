@@ -119,22 +119,22 @@ Você precisa rodar **2 servidores** em terminais separados:
 pnpm run start:dev
 ```
 
-A API estará disponível em: **http://localhost:3000**
+A API estará disponível em: **http://localhost:3001**
 
 #### Terminal 2: Frontend (Next.js)
 
 ```bash
 cd apps/web
-npm run dev
+pnpm dev
 ```
 
-O frontend estará disponível em: **http://localhost:3001**
+O frontend estará disponível em: **http://localhost:3000**
 
 ---
 
 ## 📡 Endpoints da API
 
-A API REST está disponível em `http://localhost:3000`
+A API REST está disponível em `http://localhost:3001`
 
 ### Tarefas (Tasks)
 
@@ -377,9 +377,9 @@ npx prisma generate
 lsof -ti:3000 | xargs kill
 lsof -ti:3001 | xargs kill
 
-# Windows
-netstat -ano | findstr :3000
-taskkill /PID <PID> /F
+# Windows (PowerShell)
+Stop-Process -Id (Get-NetTCPConnection -LocalPort 3000).OwningProcess -Force
+Stop-Process -Id (Get-NetTCPConnection -LocalPort 3001).OwningProcess -Force
 ```
 
 ### Avisos de certificado HTTPS no Codespaces
